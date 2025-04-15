@@ -1,3 +1,17 @@
+Summery:
+Implemented smooth transition animations for gesture-based quick product previews
+
+Added local authentication using localStorage for data persistence
+
+Integrated a fully functional wishlist and cart system
+
+Designed a responsive layout for seamless experience across devices
+
+Developed a 3-step checkout process for streamlined purchasing
+
+npm install to for dependency install and npm run dev to run 
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
