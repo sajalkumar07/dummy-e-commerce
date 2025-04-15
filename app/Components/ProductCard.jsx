@@ -1,8 +1,27 @@
 "use client";
 import { motion } from "framer-motion";
 import { Heart, Eye } from "lucide-react";
+import { useCart } from "../context/cartContext"; // Adjust the import path as needed
+import { useRouter } from "next/navigation"; // Import for routing
 
-const ProductCard = ({ product, addToCart, onQuickLook }) => {
+const ProductCard = ({ product, onQuickLook }) => {
+  const { addToCart } = useCart();
+  const router = useRouter();
+
+  // Function to handle adding to cart with authentication check
+  const handleAddToCart = () => {
+    // Check if user data exists in local storage
+    const userData = localStorage.getItem("userData");
+
+    if (userData) {
+      // User is authenticated, add to cart
+      addToCart(product);
+    } else {
+      // User is not authenticated, redirect to login
+      router.push("/login");
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -27,7 +46,7 @@ const ProductCard = ({ product, addToCart, onQuickLook }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onQuickLook();
+              onQuickLook(product);
             }}
             className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
           >
@@ -41,7 +60,7 @@ const ProductCard = ({ product, addToCart, onQuickLook }) => {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-white bg-opacity-95 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors text-sm flex items-center justify-center rounded-lg"
           >
             Add to Cart

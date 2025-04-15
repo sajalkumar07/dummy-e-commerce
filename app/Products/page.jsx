@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Filter, ArrowUpDown, Search } from "lucide-react";
 import { fetchProducts } from "../lib/api";
 import Navbar from "../Components/common/Navbar";
-import ProductCard from "../components/ProductCard";
-import QuickLookModal from "../components/QuickLookModal";
-import FilterPanel from "../components/FilterPanel";
+import ProductCard from "../Components/ProductCard";
+import QuickLookModal from "../Components/QuickLookModal";
+import FilterPanel from "../Components/FilterPanel";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -164,8 +164,8 @@ const ProductsPage = () => {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white border text-black border-gray-200 rounded-mdm hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsFilterOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border text-black border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <Filter size={16} />
                   <span>Filters</span>
@@ -197,6 +197,7 @@ const ProductsPage = () => {
             filters={filters}
             setFilters={setFilters}
             categories={categories}
+            onClose={() => setIsFilterOpen(false)}
           />
 
           {/* Products Grid */}

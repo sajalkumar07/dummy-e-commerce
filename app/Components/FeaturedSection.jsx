@@ -17,7 +17,7 @@ const FeaturedSection = ({ title, products, addToCart }) => {
         >
           <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
           <motion.a
-            href="#"
+            href="/Products"
             className="text-black font-medium flex items-center"
             whileHover={{ x: 5 }}
           >
