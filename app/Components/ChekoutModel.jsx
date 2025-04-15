@@ -88,7 +88,9 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       case 1:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">Your Details</h2>
+            <h2 className="text-xl font-semibold text-center text-black">
+              Your Details
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
@@ -103,7 +105,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -120,7 +122,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -137,7 +139,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -154,7 +156,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -171,7 +173,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -188,7 +190,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -205,7 +207,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="zip"
                   value={formData.zip}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -221,7 +223,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 >
                   <option value="">Select Country</option>
@@ -237,14 +239,16 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       case 2:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">Order Summary</h2>
+            <h2 className="text-xl font-semibold text-center text-black">
+              Order Summary
+            </h2>
             <div className="max-h-64 overflow-y-auto">
               {displayItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex py-3 border-b border-gray-200"
                 >
-                  <div className="w-16 h-16 bg-gray-100 rounded flex-shrink-0 flex items-center justify-center">
+                  <div className="w-16 h-16 text-black bg-gray-100 rounded flex-shrink-0 flex items-center justify-center">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -255,13 +259,11 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                       <div className="w-12 h-12 bg-gray-200" />
                     )}
                   </div>
-                  <div className="ml-4 flex-1">
+                  <div className="ml-4 flex-1 text-black">
                     <p className="text-sm font-medium">{item.title}</p>
-                    <p className="text-xs text-gray-500">
-                      Qty: {item.quantity}
-                    </p>
+                    <p className="text-xs text-black">Qty: {item.quantity}</p>
                   </div>
-                  <div className="text-sm font-medium">
+                  <div className="text-sm font-medium text-black">
                     ${(item.price * item.quantity).toFixed(2)}
                   </div>
                 </div>
@@ -271,19 +273,23 @@ const CheckoutModal = ({ isOpen, onClose }) => {
             <div className="pt-4 space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
-                <span>${calculateSubtotal().toFixed(2)}</span>
+                <span className="text-black">
+                  ${calculateSubtotal().toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span>$5.99</span>
+                <span className="text-black">5.99</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax</span>
-                <span>${(calculateSubtotal() * 0.08).toFixed(2)}</span>
+                <span className="text-black">
+                  ${(calculateSubtotal() * 0.08).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between pt-2 border-t border-gray-200">
-                <span className="font-semibold">Total</span>
-                <span className="font-semibold">
+                <span className="text-black">Total</span>
+                <span className="text-black">
                   $
                   {(
                     calculateSubtotal() +
@@ -310,11 +316,13 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       case 3:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">Payment</h2>
+            <h2 className="text-xl font-semibold text-center text-black">
+              Payment
+            </h2>
             <div className="bg-gray-50 rounded-lg p-4 mb-4">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Total Amount</span>
-                <span className="font-semibold">
+                <span className="text-black">Total Amount</span>
+                <span className="font-semibold text-black">
                   $
                   {(
                     calculateSubtotal() +
@@ -343,7 +351,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   value={formData.cardNumber}
                   onChange={handleChange}
                   placeholder="1234 5678 9012 3456"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border  text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -360,7 +368,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   name="cardName"
                   value={formData.cardName}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                  className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                   required
                 />
               </div>
@@ -368,7 +376,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="expiry"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium  text-gray-700"
                   >
                     Expiry Date
                   </label>
@@ -379,14 +387,14 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                     value={formData.expiry}
                     onChange={handleChange}
                     placeholder="MM/YY"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                    className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                     required
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="cvv"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium  text-gray-700"
                   >
                     CVV
                   </label>
@@ -397,7 +405,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                     value={formData.cvv}
                     onChange={handleChange}
                     placeholder="123"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
+                    className="mt-1 block w-full px-3 py-2 border text-black border-gray-300 rounded-md  focus:outline-none focus:ring-black focus:border-black"
                     required
                   />
                 </div>
