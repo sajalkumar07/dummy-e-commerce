@@ -11,6 +11,8 @@ Developed a 3-step checkout process for streamlined purchasing
 
 npm install to for dependency install and npm run dev to run 
 
+NOTE: if unble to increase the qunatiy of item in cart try to add a new item other this those item and then try again 
+
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
