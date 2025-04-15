@@ -1,3 +1,13 @@
+Summery:
+Added ProperSmooth Animation between transition
+Gestured Quick Look of products
+Add local authentication 
+Used localstorage for data persistency 
+added proper whish list and cart option
+Proper responsive design
+3 step chekout process 
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
