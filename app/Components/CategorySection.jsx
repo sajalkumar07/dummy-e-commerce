@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
-export const CategorySection = () => {
+const CategorySection = () => {
   const categories = [
     { name: "Electronics", image: "/assets/Electronics.jpg", link: "#" },
     { name: "Jewelry", image: "/assets/Jewelry.jpg", link: "#" },
@@ -65,3 +65,4 @@ export const CategorySection = () => {
     </section>
   );
 };
+export default CategorySection;

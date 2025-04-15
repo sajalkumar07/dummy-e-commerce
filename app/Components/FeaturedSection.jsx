@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { ProductCard } from "./ProductCard";
+import ProductCard from "./ProductCard";
 
-export const FeaturedSection = ({ title, products, addToCart }) => {
+const FeaturedSection = ({ title, products, addToCart }) => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,3 +38,4 @@ export const FeaturedSection = ({ title, products, addToCart }) => {
     </section>
   );
 };
+export default FeaturedSection;

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
-export const HeroSection = () => {
+const HeroSection = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -104,3 +104,4 @@ export const HeroSection = () => {
     </section>
   );
 };
+export default HeroSection;

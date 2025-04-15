@@ -1,10 +1,10 @@
 "use client";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Heart, Menu, X } from "lucide-react";
+import Link from "next/link";
 
-export const Navbar = () => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -21,43 +21,21 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <motion.a
-              href="#"
-              className="text-gray-700 hover:text-black"
-              whileHover={{ scale: 1.05 }}
-            >
+            <Link href="/Home" className="text-gray-700 hover:text-black">
               Home
-            </motion.a>
-            <motion.a
-              href="#"
-              className="text-gray-700 hover:text-black"
-              whileHover={{ scale: 1.05 }}
-            >
+            </Link>
+            <Link href="/Products" className="text-gray-700 hover:text-black">
               Products
-            </motion.a>
-            <motion.a
-              href="#"
-              className="text-gray-700 hover:text-black"
-              whileHover={{ scale: 1.05 }}
-            >
+            </Link>
+            <Link href="#" className="text-gray-700 hover:text-black">
               Categories
-            </motion.a>
-            <motion.a
-              href="#"
-              className="text-gray-700 hover:text-black"
-              whileHover={{ scale: 1.05 }}
-            >
+            </Link>
+            <Link href="#" className="text-gray-700 hover:text-black">
               About
-            </motion.a>
+            </Link>
           </div>
 
           <div className="flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              className="p-1 text-gray-700 hover:text-black"
-            >
-              <Search size={20} />
-            </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               className="p-1 text-gray-700 hover:text-black"
@@ -96,12 +74,12 @@ export const Navbar = () => {
               >
                 Home
               </a>
-              <a
-                href="#"
+              <Link
+                href="/Products"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50"
               >
                 Products
-              </a>
+              </Link>
               <a
                 href="#"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50"
@@ -121,3 +99,4 @@ export const Navbar = () => {
     </nav>
   );
 };
+export default Navbar;

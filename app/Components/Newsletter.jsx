@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-export const Newsletter = () => {
+const Newsletter = () => {
   return (
     <section className="py-16 bg-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,3 +36,4 @@ export const Newsletter = () => {
     </section>
   );
 };
+export default Newsletter;

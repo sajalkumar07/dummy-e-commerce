@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 
-export const ProductCard = ({ product, addToCart }) => {
+const ProductCard = ({ product, addToCart }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,3 +57,4 @@ export const ProductCard = ({ product, addToCart }) => {
     </motion.div>
   );
 };
+export default ProductCard;
