@@ -9,6 +9,7 @@ const ProductCard = ({ product, onQuickLook }) => {
   const { addToCart } = useCart();
   const router = useRouter();
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Check if product is in wishlist on component mount
   useEffect(() => {
@@ -16,14 +17,17 @@ const ProductCard = ({ product, onQuickLook }) => {
     setIsWishlisted(wishlist.some((item) => item.id === product.id));
   }, [product.id]);
 
-  // Function to handle adding to cart with authentication check
+  // Function to handle adding to cart with animation
   const handleAddToCart = () => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      addToCart(product);
-    } else {
-      router.push("/login");
-    }
+    setIsAddingToCart(true);
+
+    // Add product to cart
+    addToCart(product);
+
+    // Reset button state after animation
+    setTimeout(() => {
+      setIsAddingToCart(false);
+    }, 1000);
   };
 
   // Function to toggle wishlist status
@@ -90,9 +94,14 @@ const ProductCard = ({ product, onQuickLook }) => {
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-white bg-opacity-95 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={handleAddToCart}
-            className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors text-sm flex items-center justify-center rounded-lg"
+            disabled={isAddingToCart}
+            className={`w-full py-2 px-4 text-sm flex items-center justify-center rounded-lg transition-colors ${
+              isAddingToCart
+                ? "bg-green-600 text-white"
+                : "bg-black text-white hover:bg-gray-800"
+            }`}
           >
-            Add to Cart
+            {isAddingToCart ? "Added! ✓" : "Add to Cart"}
           </button>
         </div>
       </div>
@@ -110,7 +119,7 @@ const ProductCard = ({ product, onQuickLook }) => {
           <div className="flex items-center">
             <span className="text-yellow-500">★</span>
             <span className="ml-1 text-xs text-gray-500">
-              {product.rating.rate} ({product.rating.count})
+              {product.rating?.rate || 0} ({product.rating?.count || 0})
             </span>
           </div>
         </div>

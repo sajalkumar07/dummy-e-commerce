@@ -83,3 +83,20 @@ export async function getUserByCredentials(username, password) {
     throw error;
   }
 }
+
+export async function fetchUserCartDirect(userId) {
+  try {
+    const response = await fetch(`https://fakestoreapi.com/carts/${userId}`);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const cartData = await response.json();
+    console.log("Raw cart data from API:", cartData);
+    return cartData;
+  } catch (error) {
+    console.error("Failed to fetch user cart:", error);
+    throw error;
+  }
+}

@@ -10,6 +10,7 @@ export function CartProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [apiCartItems, setApiCartItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [displayItems, setDisplayItems] = useState([]);
 
   // Load all products once
   useEffect(() => {
@@ -39,72 +40,95 @@ export function CartProvider({ children }) {
     }
   }, []);
 
-  // Initialize cart from localStorage or API
+  // Initialize cart from localStorage
   useEffect(() => {
-    const initializeCart = async () => {
-      setIsLoading(true);
-      const savedCart = localStorage.getItem("cart");
-      let localCart = savedCart ? JSON.parse(savedCart) : [];
-
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
       try {
-        if (userId) {
-          // Fetch user cart from API
-          const apiCart = await getUserCart(userId);
-          const formattedApiCart = apiCart.products
-            .map((item) => {
-              const product = products.find((p) => p.id === item.productId);
-              return {
-                ...product,
-                id: item.productId,
-                quantity: item.quantity,
-              };
-            })
-            .filter((item) => item.id); // Filter out items without product details
-
-          setApiCartItems(formattedApiCart);
-
-          // Merge API cart with local cart
-          const mergedCart = mergeCarts(formattedApiCart, localCart);
-          setCartItems(mergedCart);
-        } else {
-          // Guest user - use local storage
-          setCartItems(localCart);
-        }
+        const parsedCart = JSON.parse(savedCart);
+        setCartItems(parsedCart);
       } catch (error) {
-        console.error("Failed to initialize cart:", error);
-        setCartItems(localCart);
+        console.error("Error parsing cart data:", error);
+        setCartItems([]);
+      }
+    }
+  }, []);
+
+  // Fetch API cart when user ID changes
+  useEffect(() => {
+    const fetchApiCart = async () => {
+      if (!userId) {
+        setApiCartItems([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const apiCart = await getUserCart(userId);
+        console.log("API Cart Response:", apiCart);
+
+        const formattedApiCart = apiCart.products
+          .map((item) => {
+            const product = products.find((p) => p.id === item.productId);
+            return product
+              ? {
+                  ...product,
+                  id: item.productId,
+                  quantity: item.quantity,
+                }
+              : null;
+          })
+          .filter(Boolean);
+
+        setApiCartItems(formattedApiCart);
+      } catch (error) {
+        console.error("Failed to fetch API cart:", error);
+        setApiCartItems([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (products.length > 0) {
-      initializeCart();
+    if (products.length > 0 && userId) {
+      fetchApiCart();
+    } else {
+      setIsLoading(false);
     }
   }, [userId, products]);
 
-  // Helper function to merge carts
-  const mergeCarts = (apiCart, localCart) => {
-    const merged = [...apiCart];
+  // Merge and prepare display items whenever cart sources change
+  useEffect(() => {
+    if (isLoading) return;
 
-    localCart.forEach((localItem) => {
-      const existingItem = merged.find((item) => item.id === localItem.id);
+    // If user is logged in, show API cart items with local additions
+    // If not logged in, just show local cart
+    const mergedItems = userId
+      ? [...apiCartItems, ...cartItems]
+      : [...cartItems];
+
+    // De-duplicate items by product ID and combine quantities
+    const itemMap = new Map();
+    mergedItems.forEach((item) => {
+      if (!item || !item.id) return;
+
+      const existingItem = itemMap.get(item.id);
       if (existingItem) {
-        existingItem.quantity += localItem.quantity;
+        itemMap.set(item.id, {
+          ...existingItem,
+          quantity: existingItem.quantity + item.quantity,
+        });
       } else {
-        merged.push(localItem);
+        itemMap.set(item.id, { ...item });
       }
     });
 
-    return merged;
-  };
+    setDisplayItems(Array.from(itemMap.values()));
+  }, [cartItems, apiCartItems, isLoading, userId]);
 
-  // Save to localStorage whenever cart changes (for guest users)
+  // Save to localStorage whenever local cart changes
   useEffect(() => {
-    if (!isLoading && !userId) {
-      localStorage.setItem("cart", JSON.stringify(cartItems));
-    }
-  }, [cartItems, isLoading, userId]);
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // Add to cart with full product details
   const addToCart = (product) => {
@@ -127,7 +151,6 @@ export function CartProvider({ children }) {
     });
   };
 
-  // Other cart methods remain the same...
   const removeFromCart = (productId) => {
     setCartItems((prevItems) =>
       prevItems.filter((item) => item.id !== productId)
@@ -150,17 +173,48 @@ export function CartProvider({ children }) {
     setCartItems([]);
   };
 
+  // Function to directly fetch user cart from API
+  const refreshApiCart = async () => {
+    if (!userId) return;
+
+    setIsLoading(true);
+    try {
+      const apiCart = await getUserCart(userId);
+
+      const formattedApiCart = apiCart.products
+        .map((item) => {
+          const product = products.find((p) => p.id === item.productId);
+          return product
+            ? {
+                ...product,
+                id: item.productId,
+                quantity: item.quantity,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      setApiCartItems(formattedApiCart);
+    } catch (error) {
+      console.error("Failed to refresh API cart:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
-        cartItems,
-        apiCartItems,
+        cartItems, // Local cart items
+        apiCartItems, // API cart items
+        displayItems, // Merged items for display
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         isLoading,
         isLoggedIn: !!userId,
+        refreshApiCart,
       }}
     >
       {children}

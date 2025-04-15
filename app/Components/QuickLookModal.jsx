@@ -1,6 +1,19 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Star, ShoppingBag } from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  ShoppingBag,
+  ZoomIn,
+} from "lucide-react";
+import { useState, useRef } from "react";
 
 const QuickLookModal = ({
   selectedProduct,
@@ -9,6 +22,18 @@ const QuickLookModal = ({
   setQuickLookIndex,
   addToCart,
 }) => {
+  // State for zoom functionality
+  const [isZoomed, setIsZoomed] = useState(false);
+  const imageContainerRef = useRef(null);
+
+  // Motion values for mouse position
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Transform for zoomed image position
+  const transformX = useTransform(mouseX, (val) => -val * 0.5);
+  const transformY = useTransform(mouseY, (val) => -val * 0.5);
+
   const handleQuickLookSwipe = (direction) => {
     if (!selectedProduct) return;
 
@@ -20,6 +45,35 @@ const QuickLookModal = ({
       setQuickLookIndex((prev) =>
         prev === selectedProduct.images.length - 1 ? 0 : prev + 1
       );
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!imageContainerRef.current || !isZoomed) return;
+
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Update motion values
+    mouseX.set(x - rect.width / 2);
+    mouseY.set(y - rect.height / 2);
+  };
+
+  // Handle touch gestures for swiping
+  const handleTouchStart = useRef({ x: 0 });
+
+  const onTouchStart = (e) => {
+    handleTouchStart.current.x = e.touches[0].clientX;
+  };
+
+  const onTouchEnd = (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffX = handleTouchStart.current.x - touchEndX;
+
+    // Determine swipe direction (threshold of 50px)
+    if (Math.abs(diffX) > 50) {
+      handleQuickLookSwipe(diffX > 0 ? "right" : "left");
     }
   };
 
@@ -57,32 +111,73 @@ const QuickLookModal = ({
                 <div className="flex flex-col md:flex-row md:gap-8">
                   {/* Left side - Images */}
                   <div className="flex-1">
-                    {/* Main Image */}
-                    <div className="relative h-96 md:h-[28rem] overflow-hidden rounded-lg bg-gray-50">
-                      <motion.img
-                        key={quickLookIndex}
-                        src={selectedProduct.images[quickLookIndex]}
-                        alt={selectedProduct.title}
-                        className="w-full h-full object-contain"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                      />
+                    {/* Main Image with Zoom functionality */}
+                    <div
+                      ref={imageContainerRef}
+                      className={`relative h-96 md:h-[28rem] overflow-hidden rounded-lg bg-gray-50 ${
+                        isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
+                      }`}
+                      onClick={() => setIsZoomed(!isZoomed)}
+                      onMouseMove={handleMouseMove}
+                      onTouchStart={onTouchStart}
+                      onTouchEnd={onTouchEnd}
+                    >
+                      {!isZoomed ? (
+                        <motion.img
+                          key={`normal-${quickLookIndex}`}
+                          src={selectedProduct.images[quickLookIndex]}
+                          alt={selectedProduct.title}
+                          className="w-full h-full object-contain"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      ) : (
+                        <motion.div className="absolute inset-0 cursor-zoom-out">
+                          <motion.img
+                            key={`zoomed-${quickLookIndex}`}
+                            src={selectedProduct.images[quickLookIndex]}
+                            alt={selectedProduct.title}
+                            className="w-full h-full object-none scale-150"
+                            style={{
+                              x: transformX,
+                              y: transformY,
+                            }}
+                          />
+                        </motion.div>
+                      )}
 
-                      {/* Navigation Arrows */}
-                      <button
-                        onClick={() => handleQuickLookSwipe("left")}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 p-3 rounded-full shadow-md hover:bg-white transition-colors"
-                      >
-                        <ChevronLeft size={20} className="text-black" />
-                      </button>
-                      <button
-                        onClick={() => handleQuickLookSwipe("right")}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 p-3 rounded-full shadow-md hover:bg-white transition-colors"
-                      >
-                        <ChevronRight size={20} className="text-black" />
-                      </button>
+                      {/* Zoom indicator */}
+                      {!isZoomed && (
+                        <div className="absolute top-4 right-4 bg-white/80 p-2 rounded-full shadow-md">
+                          <ZoomIn size={20} className="text-gray-700" />
+                        </div>
+                      )}
+
+                      {/* Navigation Arrows - only show when not zoomed */}
+                      {!isZoomed && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuickLookSwipe("left");
+                            }}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 p-3 rounded-full shadow-md hover:bg-white transition-colors"
+                          >
+                            <ChevronLeft size={20} className="text-black" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleQuickLookSwipe("right");
+                            }}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 p-3 rounded-full shadow-md hover:bg-white transition-colors"
+                          >
+                            <ChevronRight size={20} className="text-black" />
+                          </button>
+                        </>
+                      )}
                     </div>
 
                     {/* Thumbnails */}
@@ -90,7 +185,10 @@ const QuickLookModal = ({
                       {selectedProduct.images.map((img, index) => (
                         <button
                           key={index}
-                          onClick={() => setQuickLookIndex(index)}
+                          onClick={() => {
+                            setQuickLookIndex(index);
+                            setIsZoomed(false);
+                          }}
                           className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden transition-all ${
                             quickLookIndex === index
                               ? "ring-2 ring-black ring-offset-2"
