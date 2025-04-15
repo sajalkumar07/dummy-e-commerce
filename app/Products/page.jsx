@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter, ArrowUpDown, Search } from "lucide-react";
-import { fetchProducts } from "../lib/api";
-import Navbar from "../Components/common/Navbar";
-import ProductCard from "../components/ProductCard";
-import QuickLookModal from "../components/QuickLookModal";
-import FilterPanel from "../components/FilterPanel";
+import { fetchProducts } from "@/app/lib/api";
+import Navbar from "@/app/Components/common/Navbar";
+import ProductCard from "@/app/components/ProductCard";
+import QuickLookModal from "@/app/components/QuickLookModal";
+import FilterPanel from "@/app/components/FilterPanel";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
