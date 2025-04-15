@@ -85,6 +85,9 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("userCart");
+    localStorage.removeItem("cart");
+    localStorage.removeItem("wishlist");
+
     setUser(null);
     setIsProfileOpen(false);
     // Redirect to home page if needed
@@ -120,6 +123,14 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            <Link href="/Wishlist">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                className="p-1 text-gray-700 hover:text-black relative cursor-pointer"
+              >
+                <Heart size={20} />
+              </motion.button>
+            </Link>
             <Link href="/cart">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -169,7 +180,7 @@ const Navbar = () => {
                     >
                       <Link
                         href="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                        className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <User size={16} className="mr-2" />
@@ -177,7 +188,7 @@ const Navbar = () => {
                       </Link>
                       <Link
                         href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                        className=" px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                         onClick={() => setIsProfileOpen(false)}
                       >
                         <Package size={16} className="mr-2" />
@@ -185,7 +196,7 @@ const Navbar = () => {
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                        className=" w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                       >
                         <LogOut size={16} className="mr-2" />
                         Sign out

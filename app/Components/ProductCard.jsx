@@ -1,25 +1,46 @@
 "use client";
 import { motion } from "framer-motion";
 import { Heart, Eye } from "lucide-react";
-import { useCart } from "../context/cartContext"; // Adjust the import path as needed
-import { useRouter } from "next/navigation"; // Import for routing
+import { useCart } from "../context/cartContext";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const ProductCard = ({ product, onQuickLook }) => {
   const { addToCart } = useCart();
   const router = useRouter();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Check if product is in wishlist on component mount
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    setIsWishlisted(wishlist.some((item) => item.id === product.id));
+  }, [product.id]);
 
   // Function to handle adding to cart with authentication check
   const handleAddToCart = () => {
-    // Check if user data exists in local storage
-    const userData = localStorage.getItem("userData");
-
+    const userData = localStorage.getItem("user");
     if (userData) {
-      // User is authenticated, add to cart
       addToCart(product);
     } else {
-      // User is not authenticated, redirect to login
       router.push("/login");
     }
+  };
+
+  // Function to toggle wishlist status
+  const toggleWishlist = () => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+
+    if (isWishlisted) {
+      // Remove from wishlist
+      const updatedWishlist = wishlist.filter((item) => item.id !== product.id);
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    } else {
+      // Add to wishlist
+      const updatedWishlist = [...wishlist, product];
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    }
+
+    setIsWishlisted(!isWishlisted);
   };
 
   return (
@@ -53,8 +74,16 @@ const ProductCard = ({ product, onQuickLook }) => {
             <Eye size={18} className="text-gray-700" />
           </button>
 
-          <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors">
-            <Heart size={18} className="text-gray-700" />
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist();
+            }}
+            className={`p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors ${
+              isWishlisted ? "text-red-500" : "text-gray-700"
+            }`}
+          >
+            <Heart size={18} className={isWishlisted ? "fill-current" : ""} />
           </button>
         </div>
 

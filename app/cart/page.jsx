@@ -3,139 +3,73 @@ import { useState, useEffect } from "react";
 import { X, ShoppingBag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Navbar from "../Components/common/Navbar";
-import { getUserCart, fetchProducts } from "../lib/api"; // Adjust import path
+import { useCart } from "../context/cartContext";
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [userId, setUserId] = useState(null);
-  const [products, setProducts] = useState([]);
+  const {
+    cartItems,
+    apiCartItems,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    isLoading,
+    isLoggedIn,
+  } = useCart();
 
-  // Fetch all products on mount (to get details for cart items)
+  const [displayItems, setDisplayItems] = useState([]);
+  const [isMerging, setIsMerging] = useState(false);
+
+  // Merge and prepare cart items for display
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        const allProducts = await fetchProducts();
-        setProducts(allProducts);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      }
-    };
+    if (isLoading) return;
 
-    fetchAllProducts();
-  }, []);
+    setIsMerging(true);
 
-  // Get user ID from localStorage
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData && userData.id) {
-      setUserId(userData.id);
+    // Create a map to merge items by product ID
+    const itemsMap = new Map();
+
+    // First add API items (if logged in)
+    if (isLoggedIn) {
+      apiCartItems.forEach((item) => {
+        if (item.id && item.image && item.title) {
+          itemsMap.set(item.id, { ...item, source: "api" });
+        }
+      });
     }
-  }, []);
 
-  // Fetch user cart when userId changes
-  useEffect(() => {
-    const fetchUserCart = async () => {
-      if (userId) {
-        try {
-          setIsLoading(true);
-          const cartData = await getUserCart(userId);
-
-          // Map cart items with full product details
-          const itemsWithDetails = cartData.products.map((cartItem) => {
-            const product = products.find((p) => p.id === cartItem.productId);
-            return {
-              id: cartItem.productId,
-              title: product?.title || "Unknown Product",
-              price: product?.price || 0,
-              quantity: cartItem.quantity,
-              image: product?.image || "/placeholder-product.jpg",
-              category: product?.category || "uncategorized",
-            };
+    // Then add/merge local items
+    cartItems.forEach((item) => {
+      if (item.id && item.image && item.title) {
+        const existing = itemsMap.get(item.id);
+        if (existing) {
+          itemsMap.set(item.id, {
+            ...existing,
+            quantity: existing.quantity + item.quantity,
+            source: "both",
           });
-
-          setCartItems(itemsWithDetails);
-        } catch (error) {
-          console.error("Failed to fetch user cart:", error);
-          // Fallback to localStorage if API fails
-          const savedCart = localStorage.getItem("cart");
-          if (savedCart) {
-            setCartItems(JSON.parse(savedCart));
-          }
-        } finally {
-          setIsLoading(false);
+        } else {
+          itemsMap.set(item.id, { ...item, source: "local" });
         }
-      } else {
-        // No user logged in - use localStorage
-        const savedCart = localStorage.getItem("cart");
-        if (savedCart) {
-          setCartItems(JSON.parse(savedCart));
-        }
-        setIsLoading(false);
       }
-    };
+    });
 
-    fetchUserCart();
-  }, [userId, products]);
+    // Convert to array and filter out invalid items
+    const mergedItems = Array.from(itemsMap.values()).filter(
+      (item) => item.id && item.image && item.title && item.price
+    );
 
-  const removeFromCart = async (productId) => {
-    if (userId) {
-      // In a real app, you would call an API to remove from server cart
-      // For demo, we'll just update local state
-      setCartItems((prevItems) => {
-        const updatedItems = prevItems.filter((item) => item.id !== productId);
-        return updatedItems;
-      });
-    } else {
-      // No user - just update localStorage
-      setCartItems((prevItems) => {
-        const updatedItems = prevItems.filter((item) => item.id !== productId);
-        localStorage.setItem("cart", JSON.stringify(updatedItems));
-        return updatedItems;
-      });
-    }
-  };
-
-  const updateQuantity = async (productId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    if (userId) {
-      // In a real app, you would call an API to update quantity on server
-      setCartItems((prevItems) => {
-        const updatedItems = prevItems.map((item) =>
-          item.id === productId ? { ...item, quantity: newQuantity } : item
-        );
-        return updatedItems;
-      });
-    } else {
-      setCartItems((prevItems) => {
-        const updatedItems = prevItems.map((item) =>
-          item.id === productId ? { ...item, quantity: newQuantity } : item
-        );
-        localStorage.setItem("cart", JSON.stringify(updatedItems));
-        return updatedItems;
-      });
-    }
-  };
+    setDisplayItems(mergedItems);
+    setIsMerging(false);
+  }, [cartItems, apiCartItems, isLoading, isLoggedIn]);
 
   const calculateSubtotal = () => {
-    return cartItems.reduce(
+    return displayItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
   };
 
-  const clearCart = async () => {
-    if (userId) {
-      // In a real app, you would call an API to clear server cart
-      setCartItems([]);
-    } else {
-      setCartItems([]);
-      localStorage.removeItem("cart");
-    }
-  };
-
-  if (isLoading) {
+  if (isLoading || isMerging) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
@@ -149,7 +83,7 @@ const CartPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-8">Your Cart</h1>
 
-        {cartItems.length === 0 ? (
+        {displayItems.length === 0 ? (
           <div className="text-center py-16">
             <div className="flex justify-center mb-4">
               <ShoppingBag size={64} className="text-gray-300" />
@@ -172,24 +106,45 @@ const CartPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                {isLoggedIn && (
+                  <div className="bg-blue-50 p-4 text-blue-600 text-sm border-b border-blue-100">
+                    {apiCartItems.length > 0 ? (
+                      <p>
+                        Your account cart has {apiCartItems.length} items. Local
+                        items are merged.
+                      </p>
+                    ) : (
+                      <p>Your account cart is empty. Showing local items.</p>
+                    )}
+                  </div>
+                )}
                 <ul className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
+                  {displayItems.map((item) => (
                     <li
                       key={item.id}
                       className="p-4 sm:p-6 flex flex-col sm:flex-row"
                     >
                       <div className="flex-shrink-0 bg-gray-50 rounded-lg w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-contain p-2"
-                        />
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-full h-full object-contain p-2"
+                            onError={(e) => {
+                              e.target.src = "/placeholder-product.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <ShoppingBag size={24} className="text-gray-400" />
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 sm:ml-6 mt-4 sm:mt-0 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between">
                             <h3 className="text-base font-medium text-gray-900 line-clamp-2">
-                              {item.title}
+                              {item.title || "Unknown Product"}
                             </h3>
                             <button
                               onClick={() => removeFromCart(item.id)}
@@ -199,8 +154,17 @@ const CartPage = () => {
                             </button>
                           </div>
                           <p className="mt-1 text-sm text-gray-500 capitalize">
-                            {item.category}
+                            {item.category || "uncategorized"}
                           </p>
+                          {isLoggedIn && (
+                            <p className="text-xs text-gray-400 mt-1">
+                              {item.source === "api" && "(From your account)"}
+                              {item.source === "local" &&
+                                "(From local storage)"}
+                              {item.source === "both" &&
+                                "(Combined from account and local)"}
+                            </p>
+                          )}
                         </div>
                         <div className="mt-4 flex justify-between items-center">
                           <div className="flex items-center border border-gray-300 rounded-lg">
