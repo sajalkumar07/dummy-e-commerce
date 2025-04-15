@@ -236,9 +236,9 @@ const CartPage = () => {
                 </div>
 
                 <button
-                  onClick={() => setIsCheckoutOpen(true)}
                   className="mt-6 w-full bg-black text-white rounded-lg py-3 px-4 hover:bg-gray-800 transition-colors disabled:opacity-50"
                   disabled={displayItems.length === 0}
+                  onClick={() => setIsCheckoutOpen(true)}
                 >
                   Proceed to Checkout
                 </button>
@@ -256,6 +256,8 @@ const CartPage = () => {
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
+        cartItems={displayItems}
+        subtotal={calculateSubtotal()}
       />
     </>
   );
