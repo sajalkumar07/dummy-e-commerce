@@ -1,11 +1,13 @@
 Summery:
-Added ProperSmooth Animation between transition
-Gestured Quick Look of products
-Add local authentication 
-Used localstorage for data persistency 
-added proper whish list and cart option
-Proper responsive design
-3 step chekout process 
+Implemented smooth transition animations for gesture-based quick product previews
+
+Added local authentication using localStorage for data persistence
+
+Integrated a fully functional wishlist and cart system
+
+Designed a responsive layout for seamless experience across devices
+
+Developed a 3-step checkout process for streamlined purchasing
 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
